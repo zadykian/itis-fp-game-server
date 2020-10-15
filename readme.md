@@ -11,3 +11,5 @@
 Цель игры - выстроить на глобальном поле линию из трёх захваченных локальных полей.
 
 Подробнее о правилах: https://en.wikipedia.org/wiki/ultimate_tic-tac-toe
+
+Презентация с примером игровой партии: https://docs.google.com/presentation/d/1eFDbeYZcGYKSxex6f5aG78gn6_Hjz6Jzl-REypYr4Y8/edit?usp=sharing
