@@ -1,7 +1,7 @@
 module AtomicCell where
 
 import BoardCellState
-import Cell
+import BoardCell
 import PlayerTurn
 
 {-|
@@ -10,15 +10,16 @@ import PlayerTurn
 newtype AtomicCell = AtomicCell BoardCellState
 
 {-|
-    Представитель класса типов Cell для типа AtomicCell.
+    Представитель класса типов BoardCell для типа AtomicCell.
 -}
-instance Cell AtomicCell where
+instance BoardCell AtomicCell where
 
     -- | Атомарная ячейка содержит только свое состояние - возвращаем его.
     state (AtomicCell cellState) = cellState
 
-    -- | Если ячейка уже занята, возвращаем ошибку. 
-    applyTurn _ (AtomicCell (Owned _)) = Left "Cell is owned already!"
+    -- | Если ячейка свободна, она может быть присвоена игроку.
+    turnCanBeApplied _ (AtomicCell Free) = True
+    turnCanBeApplied _ (AtomicCell _) = False
 
-    -- | В противном случае присваиваем ячейку игроку.
-    applyTurn playerTurn _ = Right $ AtomicCell $ Owned $ player playerTurn
+    -- | Присваиваем ячейку игроку.
+    applyTurn playerTurn _ = AtomicCell $ Owned $ player playerTurn
