@@ -26,6 +26,9 @@ turnCanBeAppliedToState currentTurn (GameState _ Nothing) = player currentTurn =
      В общем случае ход может быть применен к состоянию игры, если:
      1. Предыдущий ход выполнял другой игрок.
      2. Текущий ход может быть применен к глобальному полю.
+     3. а) Позиция локального поля соответствует позиции ячейки предыдущего хода.
+        - или -
+        б) Предыдущий ход определил недоступное локальное поле.
 -}
 turnCanBeAppliedToState currentTurn (GameState globalBoard (Just previousTurn)) =
     player currentTurn /= player previousTurn
