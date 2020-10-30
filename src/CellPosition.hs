@@ -1,4 +1,4 @@
-module CellPosition (CellPosition, cellPosition) where
+module CellPosition (CellPosition, cellPosition, toIntValue) where
 
 {-|
      Позиция ячейки игрового поля.
@@ -29,3 +29,9 @@ cellPosition intValue
     | cellToCreate < minBound || cellToCreate > maxBound = error "Cell position must be in range [0..8]"
     | otherwise = cellToCreate
     where cellToCreate = CellPosition intValue
+
+{-|
+    Функция - деконструктор позиции ячейки.
+-}
+toIntValue :: CellPosition -> Int
+toIntValue (CellPosition intValue) = intValue

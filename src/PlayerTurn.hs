@@ -6,12 +6,12 @@ import CellPosition
 {-|
     Ход игрока.
     Определяется как:
-        - метка игрока (X | O); 
+        - метка игрока (X | O);
         - позиция ячейки на глобальном поле (номер локального поля);
         - позиция ячейки на локальном поле.
 -}
-data PlayerTurn = PlayerTurn 
-    { 
+data PlayerTurn = PlayerTurn
+    {
         player :: PlayerMark,
         globalPosition :: CellPosition,
         localPosition :: CellPosition

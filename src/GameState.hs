@@ -1,15 +1,29 @@
-module GameState where
+module GameState (GameState, ErrorMessage, tryApplyTurn) where
 
-import GameBoard(GlobalBoard)
+import GameBoard(GlobalBoard, getBoardCell)
 import PlayerTurn
 import BoardCell
 import PlayerMark
+import BoardCellState
 
 {-|
     Состояние игры.
     Описывается как глобальное поле и последний ход одного из игроков.
 -}
 data GameState = GameState GlobalBoard (Maybe PlayerTurn)
+
+{-|
+    Сообщение об ошибке выполнения операции.
+-}
+type ErrorMessage = String
+
+{-|
+    Попытаться применить ход к состоянию игры.
+-}
+tryApplyTurn :: PlayerTurn -> GameState -> Either ErrorMessage GameState
+tryApplyTurn playerTurn gameState = if turnCanBeAppliedToState playerTurn gameState 
+    then Right $ applyTurnToState playerTurn gameState
+    else Left "turn can't be applied!"
 
 {-|
     Определить, может ли ход быть применен к состоянию игры.
@@ -21,7 +35,6 @@ turnCanBeAppliedToState :: PlayerTurn -> GameState -> Bool
 -}
 turnCanBeAppliedToState currentTurn (GameState _ Nothing) = player currentTurn == X
 
--- todo обработать зависимость предыдущего и текущего ходов.
 {-|
      В общем случае ход может быть применен к состоянию игры, если:
      1. Предыдущий ход выполнял другой игрок.
@@ -33,6 +46,12 @@ turnCanBeAppliedToState currentTurn (GameState _ Nothing) = player currentTurn =
 turnCanBeAppliedToState currentTurn (GameState globalBoard (Just previousTurn)) =
     player currentTurn /= player previousTurn
     && turnCanBeApplied currentTurn globalBoard
+    && (localPosition previousTurn == globalPosition currentTurn || previousTurnDirectedToOwned)
+    where
+        previousTurnDirectedToOwned = case state localBoardSetByPreviousTurn of
+            Owned _ -> True
+            Free -> False
+        localBoardSetByPreviousTurn = getBoardCell (localPosition previousTurn) globalBoard
 
 {-|
     Применить ход к состоянию игры.
