@@ -21,6 +21,7 @@ turnCanBeAppliedToState :: PlayerTurn -> GameState -> Bool
 -}
 turnCanBeAppliedToState currentTurn (GameState _ Nothing) = player currentTurn == X
 
+-- todo обработать зависимость предыдущего и текущего ходов.
 {-|
      В общем случае ход может быть применен к состоянию игры, если:
      1. Предыдущий ход выполнял другой игрок.
@@ -28,7 +29,6 @@ turnCanBeAppliedToState currentTurn (GameState _ Nothing) = player currentTurn =
 -}
 turnCanBeAppliedToState currentTurn (GameState globalBoard (Just previousTurn)) =
     player currentTurn /= player previousTurn
-    -- todo
     && turnCanBeApplied currentTurn globalBoard
 
 {-|
