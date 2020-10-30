@@ -28,6 +28,7 @@ turnCanBeAppliedToState currentTurn (GameState _ Nothing) = player currentTurn =
 -}
 turnCanBeAppliedToState currentTurn (GameState globalBoard (Just previousTurn)) =
     player currentTurn /= player previousTurn
+    -- todo
     && turnCanBeApplied currentTurn globalBoard
 
 {-|
