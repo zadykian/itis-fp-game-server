@@ -22,8 +22,6 @@ newtype GameBoard cell = GameBoard [cell]
 getBoardCell :: CellPosition -> GameBoard cell -> cell
 getBoardCell position (GameBoard cellList) = cellList !! toIntValue position
 
-
-
 {-|
     Локальное игровое поле.
 -}
@@ -34,21 +32,6 @@ type LocalBoard = GameBoard AtomicCell
 -}
 emptyLocalBoard :: LocalBoard
 emptyLocalBoard = GameBoard $ replicate 9 (AtomicCell Free)
-
-{-|
-    Представитель класса типов BoardCell для типа LocalBoard.
--}
-instance BoardCell LocalBoard where
-
-    -- todo
-    state = undefined
-    
-    -- todo
-    turnCanBeApplied = undefined
-
-    -- todo
-    applyTurn = undefined
-
 
 
 {-|
@@ -62,16 +45,21 @@ type GlobalBoard = GameBoard LocalBoard
 emptyGlobalBoard :: GlobalBoard
 emptyGlobalBoard = GameBoard $ replicate 9 emptyLocalBoard
 
+
 {-|
-    Представитель класса типов BoardCell для типа GlobalBoard.
+    Представитель класса типов BoardCell для типа [GameBoard cell],
+    причем вложенная в GameBoard ячейка также должна являться представителем класса BoardCell.
+
+    Образуется следующая вложенность типов:
+    GlobalBoard --> LocalBoard --> AtomicCell.
 -}
-instance BoardCell GlobalBoard where
+instance (BoardCell cell) => BoardCell (GameBoard cell) where
 
-    -- todo
-    state = undefined
-    
-    -- todo
-    turnCanBeApplied = undefined
+        -- todo
+        state = undefined
 
-    -- todo
-    applyTurn = undefined
+        -- todo
+        turnCanBeApplied = undefined
+
+        -- todo
+        applyTurn = undefined
