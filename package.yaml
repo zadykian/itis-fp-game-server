@@ -1,5 +1,5 @@
 name:                ultimate-tic-tac-toe
-version:             0.1.0.0
+version:             0.2.0.0
 github:              "zadykian/ultimate-tic-tac-toe"
 license:             BSD3
 author:              "Alexander Zadykian"
@@ -16,6 +16,7 @@ extra-source-files:
 
 dependencies:
 - base >= 4.7 && < 5
+- lens
 
 library:
   source-dirs: src
@@ -41,3 +42,4 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - ultimate-tic-tac-toe
+    - HUnit
