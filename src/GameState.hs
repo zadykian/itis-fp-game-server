@@ -21,7 +21,7 @@ type ErrorMessage = String
     Попытаться применить ход к состоянию игры.
 -}
 tryApplyTurn :: PlayerTurn -> GameState -> Either ErrorMessage GameState
-tryApplyTurn playerTurn gameState@(GameState globalBoard _)
+tryApplyTurn playerTurn gameState
     | turnCanBeAppliedToState playerTurn gameState = Right $ applyTurnToState playerTurn gameState
     | otherwise = Left "turn can't be applied!"
 
