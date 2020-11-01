@@ -7,8 +7,8 @@ module GameBoard(
 ) where
 
 import AtomicCell
-import BoardCell
-import BoardCellState
+import BoardSegment
+import BoardSegmentState
 import CellPosition
 
 {-|
@@ -47,13 +47,13 @@ emptyGlobalBoard = GameBoard $ replicate 9 emptyLocalBoard
 
 
 {-|
-    Представитель класса типов BoardCell для типа [GameBoard cell],
-    причем вложенная в GameBoard ячейка также должна являться представителем класса BoardCell.
+    Представитель класса типов BoardSegment для типа [GameBoard cell],
+    причем вложенная в GameBoard ячейка также должна являться представителем класса BoardSegment.
 
     Образуется следующая вложенность типов:
     GlobalBoard --> LocalBoard --> AtomicCell.
 -}
-instance (BoardCell cell) => BoardCell (GameBoard cell) where
+instance (BoardSegment cell) => BoardSegment (GameBoard cell) where
 
         -- todo
         state = undefined

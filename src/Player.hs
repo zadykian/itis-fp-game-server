@@ -1,8 +1,8 @@
-module PlayerMark where
+module Player where
 
 {-|
-    Метка игрока.
+    Тип игрока.
     Используется для указания принадлежности ячейки одному из игроков,
     а также для идентификации игрока в составе хода.
 -}
-data PlayerMark = X | O deriving (Eq, Show)
+data Player = X | O deriving (Eq, Show)

@@ -1,18 +1,18 @@
 module AtomicCell where
 
-import BoardCellState
-import BoardCell
+import BoardSegmentState
+import BoardSegment
 import PlayerTurn
 
 {-|
     Атомарная ячейка локального поля.
 -}
-newtype AtomicCell = AtomicCell BoardCellState
+newtype AtomicCell = AtomicCell BoardSegmentState
 
 {-|
-    Представитель класса типов BoardCell для типа AtomicCell.
+    Представитель класса типов BoardSegment для типа AtomicCell.
 -}
-instance BoardCell AtomicCell where
+instance BoardSegment AtomicCell where
 
     -- | Атомарная ячейка содержит только свое состояние - возвращаем его.
     state (AtomicCell cellState) = cellState

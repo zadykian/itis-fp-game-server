@@ -2,9 +2,9 @@ module GameState (GameState, ErrorMessage, tryApplyTurn) where
 
 import GameBoard(GlobalBoard, getBoardCell)
 import PlayerTurn
-import BoardCell
-import PlayerMark
-import BoardCellState
+import BoardSegment
+import Player
+import BoardSegmentState
 
 {-|
     Состояние игры.

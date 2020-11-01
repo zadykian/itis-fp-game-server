@@ -1,6 +1,6 @@
 module PlayerTurn where
 
-import PlayerMark
+import Player
 import CellPosition
 
 {-|
@@ -12,7 +12,7 @@ import CellPosition
 -}
 data PlayerTurn = PlayerTurn
     {
-        player :: PlayerMark,
+        player :: Player,
         globalPosition :: CellPosition,
         localPosition :: CellPosition
     }
