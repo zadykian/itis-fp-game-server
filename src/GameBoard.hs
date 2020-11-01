@@ -12,6 +12,7 @@ import BoardSegmentState
 import CellPosition
 import Player
 import PlayerTurn
+import Control.Lens
 
 {-|
     Игровое поле, состоящее из девяти ячеек.
@@ -70,11 +71,11 @@ instance (BoardSegment cell) => BoardSegment (GameBoard cell) where
                     -- Принадлежит ли линия, представленная в виде списка индексов доски, игроку playerOwner.
                     lineIsOwned :: [Int] -> Bool
                     lineIsOwned = all (segmentIsOwned . (cellList !!))
-                    
+
                     -- Принадлежит ли сегмент игроку playerOwner.
                     segmentIsOwned :: BoardSegment cell => cell -> Bool
                     segmentIsOwned boardSegment = state boardSegment == Owned playerOwner
-                    
+
                     -- Все возможные линии выигрыша на доске, представленные в виде списков индексов.
                     allPossibleLines =
                         [
@@ -87,11 +88,20 @@ instance (BoardSegment cell) => BoardSegment (GameBoard cell) where
                         ]
 
     -- | Определить, может ли ход игрока быть применён к сегменту.
-    turnCanBeApplied (WithPosition currentPosition nextTurnPart) gameBoard 
-        = turnCanBeApplied nextTurnPart nextTargetSegment
+    turnCanBeApplied (WithPosition currentPosition innerTurnPart) currentBoardSegment
+        = state currentBoardSegment == Free && turnCanBeApplied innerTurnPart nextSegment
         -- Следующий по вложенности сегмент доски.
-        where nextTargetSegment = getBoardCell currentPosition gameBoard
+        where nextSegment = getBoardCell currentPosition currentBoardSegment
+
     turnCanBeApplied _ _ = error "Player turn must contain CellPosition!"
 
-    -- todo
-    applyTurn = undefined
+    -- | Применить ход к сегменту доски.
+    applyTurn (WithPosition currentPosition innerTurnPart) gameBoard@(GameBoard cellList)
+        = GameBoard $ cellList & element (toIntValue currentPosition) .~ affectedInnerSegment
+        where
+            -- Результат применения хода к nextSegment.
+            affectedInnerSegment = applyTurn innerTurnPart nextSegment
+            -- Следующий по вложенности сегмент доски.
+            nextSegment = getBoardCell currentPosition gameBoard
+
+    applyTurn _ _ = error "Player turn must contain CellPosition!"
