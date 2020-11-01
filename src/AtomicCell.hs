@@ -22,4 +22,5 @@ instance BoardSegment AtomicCell where
     turnCanBeApplied _ (AtomicCell _) = False
 
     -- | Присваиваем ячейку игроку.
-    applyTurn playerTurn _ = AtomicCell $ Owned $ player playerTurn
+    applyTurn (PlayerTurn playerOfTurn) _ = AtomicCell $ Owned playerOfTurn
+    applyTurn _ _ = error "Invalid player turn pattern!"

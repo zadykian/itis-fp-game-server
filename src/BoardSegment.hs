@@ -8,11 +8,11 @@ import PlayerTurn
 -}
 class BoardSegment segment where
 
-    -- | Получить текущее состояние ячейки.
+    -- | Получить состояние сегмента доски.
     state :: segment -> BoardSegmentState
 
-    -- | Определить, может ли ход игрока быть применён к ячейке.
+    -- | Определить, может ли ход игрока быть применён к сегменту.
     turnCanBeApplied :: PlayerTurn -> segment -> Bool
 
-    -- | Применить ход игрока к ячейке.
+    -- | Применить ход игрока к сегменту.
     applyTurn :: PlayerTurn -> segment -> segment
