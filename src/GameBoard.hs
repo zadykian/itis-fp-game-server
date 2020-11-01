@@ -66,7 +66,7 @@ instance (BoardSegment cell) => BoardSegment (GameBoard cell) where
         where
             -- Содержит ли игровое поле линию выигрыша одного из игроков.
             containsOwnedLine :: (BoardSegment cell) => GameBoard cell -> Player -> Bool
-            containsOwnedLine (GameBoard cellList) playerOwner = any lineIsOwned allPossibleLines
+            containsOwnedLine (GameBoard cellList) playerOwner = allPossibleLines & any lineIsOwned
                 where
                     -- Принадлежит ли линия, представленная в виде списка индексов доски, игроку playerOwner.
                     lineIsOwned :: [Int] -> Bool
