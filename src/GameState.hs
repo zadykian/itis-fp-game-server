@@ -1,6 +1,6 @@
-module GameState (GameState, ErrorMessage, tryApplyTurn) where
+module GameState where
 
-import GameBoard(GlobalBoard, getBoardCell)
+import GameBoard(GlobalBoard, getBoardCell, emptyGlobalBoard)
 import PlayerTurn
 import BoardSegment
 import Player
@@ -10,7 +10,14 @@ import BoardSegmentState
     Состояние игры.
     Описывается как глобальное поле и последний ход одного из игроков.
 -}
-data GameState = GameState GlobalBoard (Maybe PlayerTurn)
+data GameState = GameState GlobalBoard (Maybe PlayerTurn) deriving (Eq, Show)
+
+{-|
+    Конструктор новой игровой партии.
+-}
+newGameState :: GameState
+newGameState = GameState emptyGlobalBoard Nothing
+
 
 {-|
     Сообщение об ошибке выполнения операции.

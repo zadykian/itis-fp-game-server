@@ -6,7 +6,7 @@ import CellPosition
 {-|
     Ход игрока.
 -}
-data PlayerTurn = PlayerTurn [CellPosition] Player
+data PlayerTurn = PlayerTurn [CellPosition] Player deriving (Eq, Show)
 
 {-
     Получить глобальную позицию в составе хода.
