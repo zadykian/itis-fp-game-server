@@ -9,17 +9,18 @@ import BoardSegment
 
 main :: IO Counts
 main = runTestTT $ TestList $ map (uncurry TestLabel) [
-    ("empty local board creation", createEmptyLocalBoardTest),
-    ("empty global board creation", createEmptyGlobalBoardTest),
+    ("empty local board creation", createEmptyLocalBoard),
+    ("empty global board creation", createEmptyGlobalBoard),
     ("apply turn to empty local board", applyTurnToEmptyLocalBoard),
-    ("apply turn to empty global board", applyTurnToEmptyGlobalBoard)
+    ("apply turn to empty global board", applyTurnToEmptyGlobalBoard),
+    ("local board is owned by X", localBoardIsOwned)
     ]
 
 {-|
     Тест создания пустого локального поля.
 -}
-createEmptyLocalBoardTest :: Test
-createEmptyLocalBoardTest = TestCase (
+createEmptyLocalBoard :: Test
+createEmptyLocalBoard = TestCase (
     assertEqual "emptyLocalBoard"
         (GameBoard $ replicate 9 $ AtomicCell Free)
         emptyLocalBoard
@@ -28,13 +29,13 @@ createEmptyLocalBoardTest = TestCase (
 {-|
     Тест создания пустого глобального поля.
 -}
-createEmptyGlobalBoardTest :: Test
-createEmptyGlobalBoardTest = TestCase (
+createEmptyGlobalBoard :: Test
+createEmptyGlobalBoard = TestCase (
     assertEqual "emptyGlobalBoard"
         (GameBoard $ replicate 9 emptyLocalBoard)
         emptyGlobalBoard
     )
-    
+
 {-|
     Применить ход к пустому локальному полю.
 -}
@@ -61,3 +62,20 @@ applyTurnToEmptyGlobalBoard = TestCase (
             replicate 4 emptyAtomicCell ++
             [AtomicCell (Owned O)] ++
             replicate 4 emptyAtomicCell
+
+{-|
+    Получить состояние локального поля, захваченного игроком X.
+-}
+localBoardIsOwned :: Test
+localBoardIsOwned = TestCase (
+    assertEqual "local board is owned"
+        (Owned X)
+        (state localBoard)
+    )
+    where 
+        localBoard = GameBoard $ map AtomicCell 
+            [
+                Owned X, Free, Free,
+                Free, Owned X, Free,
+                Free, Free, Owned X
+            ]
