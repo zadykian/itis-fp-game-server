@@ -97,7 +97,7 @@ applyTurnToGameState = TestCase (
 
         {-
             Глобальное поле до применения хода:
-            
+
                 X__ | _OO | O_X
                 _X_ | _X_ | _OX
                 __X | X__ | _XO
@@ -114,8 +114,8 @@ applyTurnToGameState = TestCase (
             [
                 -- LocalBoard '0'
                 [
-                    Owned X, Free, Free, 
-                    Free, Owned X, Free, 
+                    Owned X, Free, Free,
+                    Free, Owned X, Free,
                     Free, Free, Owned X
                 ],
                 -- LocalBoard '1'
@@ -170,7 +170,7 @@ applyTurnToGameState = TestCase (
 
         {-
             Глобальное поле после применения хода:
-            
+
                 X__ | _OO | O_X
                 _X_ | _X_ | _OX
                 __X | X__ | _XO
@@ -187,8 +187,8 @@ applyTurnToGameState = TestCase (
             [
                 -- LocalBoard '0'
                 [
-                    Owned X, Free, Free, 
-                    Free, Owned X, Free, 
+                    Owned X, Free, Free,
+                    Free, Owned X, Free,
                     Free, Free, Owned X
                 ],
                 -- LocalBoard '1'
