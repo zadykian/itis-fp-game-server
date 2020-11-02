@@ -88,19 +88,19 @@ instance (BoardSegment cell) => BoardSegment (GameBoard cell) where
                         ]
 
     -- | Определить, может ли ход игрока быть применён к сегменту.
-    turnCanBeApplied (WithPosition currentPosition innerTurnPart) currentBoardSegment
-        = state currentBoardSegment == Free && turnCanBeApplied innerTurnPart nextSegment
+    turnCanBeApplied (PlayerTurn (currentPosition : nestedPositions) playerOfTurn) currentBoardSegment
+        = state currentBoardSegment == Free && turnCanBeApplied (PlayerTurn nestedPositions playerOfTurn) nextSegment
         -- Следующий по вложенности сегмент доски.
         where nextSegment = getBoardCell currentPosition currentBoardSegment
 
     turnCanBeApplied _ _ = error "Player turn must contain CellPosition!"
 
     -- | Применить ход к сегменту доски.
-    applyTurn (WithPosition currentPosition innerTurnPart) gameBoard@(GameBoard cellList)
+    applyTurn (PlayerTurn (currentPosition : nestedPositions) playerOfTurn) gameBoard@(GameBoard cellList)
         = GameBoard $ cellList & element (toIntValue currentPosition) .~ affectedInnerSegment
         where
             -- Результат применения хода к nextSegment.
-            affectedInnerSegment = applyTurn innerTurnPart nextSegment
+            affectedInnerSegment = applyTurn (PlayerTurn nestedPositions playerOfTurn) nextSegment
             -- Следующий по вложенности сегмент доски.
             nextSegment = getBoardCell currentPosition gameBoard
 
