@@ -5,8 +5,6 @@ import CellPosition
 
 {-|
     Ход игрока.
-    Определяется как рекурсивный тип, состоящий из последовательности позиций и типа игрока: 
-        [CellPosition | ... | CellPosition | Player].
 -}
 data PlayerTurn = PlayerTurn [CellPosition] Player
 

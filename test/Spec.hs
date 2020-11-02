@@ -1,12 +1,17 @@
 import Test.HUnit
+
 import GameBoard
 import AtomicCell
 import BoardSegmentState
+import Player
+import PlayerTurn
+import BoardSegment
 
 main :: IO Counts
-main = runTestTT $ TestList [
-    TestLabel "empty local board creation" createEmptyLocalBoardTest,
-    TestLabel "empty global board creation" createEmptyGlobalBoardTest
+main = runTestTT $ TestList $ map (uncurry TestLabel) [
+    ("empty local board creation", createEmptyLocalBoardTest),
+    ("empty global board creation", createEmptyGlobalBoardTest),
+    ("apply turn to empty local board", applyTurnToEmptyLocalBoard)
     ]
 
 
@@ -16,8 +21,8 @@ main = runTestTT $ TestList [
 createEmptyLocalBoardTest :: Test
 createEmptyLocalBoardTest = TestCase (
     assertEqual "emptyLocalBoard"
+        (GameBoard $ replicate 9 $ AtomicCell Free)
         emptyLocalBoard
-        $ GameBoard $ replicate 9 $ AtomicCell Free
     )
 
 {-|
@@ -26,6 +31,16 @@ createEmptyLocalBoardTest = TestCase (
 createEmptyGlobalBoardTest :: Test
 createEmptyGlobalBoardTest = TestCase (
     assertEqual "emptyGlobalBoard"
+        (GameBoard $ replicate 9 emptyLocalBoard)
         emptyGlobalBoard
-        $ GameBoard $ replicate 9 emptyLocalBoard
+    )
+    
+{-|
+    Применить ход к пустому локальному полю.
+-}
+applyTurnToEmptyLocalBoard :: Test
+applyTurnToEmptyLocalBoard = TestCase (
+    assertEqual "turn to empty local board"
+        (GameBoard $ AtomicCell (Owned X) : replicate 8 emptyAtomicCell)
+        (applyTurn (PlayerTurn [toEnum 0] X) emptyLocalBoard)
     )
