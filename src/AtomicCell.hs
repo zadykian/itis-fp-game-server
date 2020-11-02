@@ -3,11 +3,12 @@ module AtomicCell where
 import BoardSegmentState
 import BoardSegment
 import PlayerTurn
+import Player
 
 {-|
     Атомарная ячейка локального поля.
 -}
-newtype AtomicCell = AtomicCell BoardSegmentState deriving (Eq, Show)
+newtype AtomicCell = AtomicCell BoardSegmentState deriving (Eq)
 
 {-|
     Конструктор пустой атомарной ячейки.
@@ -30,3 +31,12 @@ instance BoardSegment AtomicCell where
     -- | Присваиваем ячейку игроку.
     applyTurn (PlayerTurn [] playerOfTurn) _ = AtomicCell $ Owned playerOfTurn
     applyTurn _ _ = error "Invalid player turn pattern!"
+
+{-|
+    Представитель класса типов Show для типа AtomicCell.
+-}
+instance Show AtomicCell where
+    show (AtomicCell boardCellState) = case boardCellState of
+        Owned X -> show X
+        Owned O -> show O
+        Free -> "_"
