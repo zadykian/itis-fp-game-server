@@ -7,7 +7,13 @@ import PlayerTurn
 {-|
     Атомарная ячейка локального поля.
 -}
-newtype AtomicCell = AtomicCell BoardSegmentState
+newtype AtomicCell = AtomicCell BoardSegmentState deriving (Eq, Show)
+
+{-|
+    Конструктор пустой атомарной ячейки.
+-}
+emptyAtomicCell :: AtomicCell
+emptyAtomicCell = AtomicCell Free
 
 {-|
     Представитель класса типов BoardSegment для типа AtomicCell.

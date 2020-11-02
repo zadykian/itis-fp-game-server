@@ -1,10 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 
-module GameBoard(
-    GameBoard, getBoardCell,
-    LocalBoard, emptyLocalBoard,
-    GlobalBoard, emptyGlobalBoard
-) where
+module GameBoard where
 
 import AtomicCell
 import BoardSegment
@@ -17,7 +13,7 @@ import Control.Lens
 {-|
     Игровое поле, состоящее из девяти ячеек.
 -}
-newtype GameBoard cell = GameBoard [cell]
+newtype GameBoard cell = GameBoard [cell] deriving (Eq, Show)
 
 {-|
     Получить ячейку игрового поля по позиции CellPosition.
@@ -34,7 +30,7 @@ type LocalBoard = GameBoard AtomicCell
     Конструктор пустого локального поля.
 -}
 emptyLocalBoard :: LocalBoard
-emptyLocalBoard = GameBoard $ replicate 9 (AtomicCell Free)
+emptyLocalBoard = GameBoard $ replicate 9 emptyAtomicCell
 
 
 {-|
