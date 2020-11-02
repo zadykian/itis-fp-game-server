@@ -23,7 +23,7 @@ newtype GameBoard cell = GameBoard [cell]
     Получить ячейку игрового поля по позиции CellPosition.
 -}
 getBoardCell :: CellPosition -> GameBoard cell -> cell
-getBoardCell position (GameBoard cellList) = cellList !! toIntValue position
+getBoardCell position (GameBoard cellList) = cellList !! fromEnum position
 
 {-|
     Локальное игровое поле.
@@ -97,7 +97,7 @@ instance (BoardSegment cell) => BoardSegment (GameBoard cell) where
 
     -- | Применить ход к сегменту доски.
     applyTurn (PlayerTurn (currentPosition : nestedPositions) playerOfTurn) gameBoard@(GameBoard cellList)
-        = GameBoard $ cellList & element (toIntValue currentPosition) .~ affectedInnerSegment
+        = GameBoard $ cellList & element (fromEnum currentPosition) .~ affectedInnerSegment
         where
             -- Результат применения хода к nextSegment.
             affectedInnerSegment = applyTurn (PlayerTurn nestedPositions playerOfTurn) nextSegment

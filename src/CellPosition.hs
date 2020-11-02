@@ -1,4 +1,4 @@
-module CellPosition (CellPosition, cellPosition, toIntValue) where
+module CellPosition (CellPosition, toEnum, fromEnum) where
 
 {-|
      Позиция ячейки игрового поля.
@@ -22,16 +22,13 @@ instance Bounded CellPosition where
     maxBound = CellPosition 8
 
 {-|
-    Функция - конструктор позиции ячейки.
+    Представитель класса типов Enum для типа CellPosition.
 -}
-cellPosition :: Int -> CellPosition
-cellPosition intValue
-    | cellToCreate < minBound || cellToCreate > maxBound = error "Cell position must be in range [0..8]"
-    | otherwise = cellToCreate
-    where cellToCreate = CellPosition intValue
+instance Enum CellPosition where
 
-{-|
-    Функция - деконструктор позиции ячейки.
--}
-toIntValue :: CellPosition -> Int
-toIntValue (CellPosition intValue) = intValue
+    toEnum intValue
+        | cellToCreate < minBound || cellToCreate > maxBound = error "Cell position must be in range [0..8]"
+        | otherwise = cellToCreate
+        where cellToCreate = CellPosition intValue
+
+    fromEnum (CellPosition intValue) = intValue
