@@ -10,15 +10,17 @@ import BoardSegment
 import GameState
 
 main :: IO Counts
-main = runTestTT $ TestList $ map (uncurry TestLabel) [
-    ("empty local board creation", createEmptyLocalBoard),
-    ("empty global board creation", createEmptyGlobalBoard),
-    ("apply turn to empty local board", applyTurnToEmptyLocalBoard),
-    ("apply turn to empty global board", applyTurnToEmptyGlobalBoard),
-    ("board is owned by X", localBoardIsOwned),
-    ("apply turn of X to game state", applyTurnToGameState),
-    ("second turn of player 'O'", rejectSecondTurnOfSamePlayer),
-    ("invalid local board", rejectWrongLocalBoardTurn)
+main = runTestTT $ TestList $ map (uncurry TestLabel)
+    [
+        ("empty local board creation", createEmptyLocalBoard),
+        ("empty global board creation", createEmptyGlobalBoard),
+        ("apply turn to empty local board", applyTurnToEmptyLocalBoard),
+        ("apply turn to empty global board", applyTurnToEmptyGlobalBoard),
+
+        ("board is owned by X", localBoardIsOwned),
+        ("apply turn of X to game state", applyTurnToGameState),
+        ("second turn of player 'O'", rejectSecondTurnOfSamePlayer),
+        ("invalid local board", rejectWrongLocalBoardTurn)
     ]
 
 {-|
