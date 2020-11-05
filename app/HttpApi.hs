@@ -3,12 +3,18 @@
 
 module HttpApi where
 
-import Servant.API
+import Servant.API (Get, Post, (:>), (:<|>), ReqBody, JSON)
 import GameState (GameState)
+import PlayerTurn (PlayerTurn)
 
-{-|
-    Декларация HTTP Api, содержащая сигнатуры всех методов.
--}
+
+-- | Декларация HTTP Api, содержащая сигнатуры всех методов.
 type HttpApi =
-    -- | Получение нового состояния игры.
-    "get_new_game_state" :> Get '[JSON] GameState
+    -- | Получить новое состояние игры.
+    "get-new-game-state"
+        :> Get '[JSON] GameState
+
+    -- | Применить ход к состоянию игры.
+    :<|> "apply_turn_to_game_state"
+        :> ReqBody '[JSON] (PlayerTurn, GameState) 
+        :> Post '[JSON] GameState
