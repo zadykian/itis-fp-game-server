@@ -1,3 +1,5 @@
+{-# LANGUAGE DeriveGeneric #-}
+
 module GameState where
 
 import GameBoard(GlobalBoard, getBoardCell, emptyGlobalBoard)
@@ -5,19 +7,25 @@ import PlayerTurn
 import BoardSegment
 import Player
 import BoardSegmentState
+import Data.Aeson
+import GHC.Generics (Generic)
 
 {-|
     Состояние игры.
     Описывается как глобальное поле и последний ход одного из игроков.
 -}
-data GameState = GameState GlobalBoard (Maybe PlayerTurn) deriving (Eq, Show)
+data GameState = GameState GlobalBoard (Maybe PlayerTurn) deriving (Eq, Show, Generic)
+
+{-|
+    Представитель класса типов ToJSON для типа GameState.
+-}
+instance ToJSON GameState
 
 {-|
     Конструктор новой игровой партии.
 -}
 newGameState :: GameState
 newGameState = GameState emptyGlobalBoard Nothing
-
 
 {-|
     Сообщение об ошибке выполнения операции.

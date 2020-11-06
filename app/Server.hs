@@ -5,4 +5,7 @@ import HttpApi
 
 import GameState(newGameState, tryApplyTurn)
 
--- httpServer :: Server HttpApi
+{-|
+    HTTP-сервер игры.
+-}
+httpServer :: Server HttpApi

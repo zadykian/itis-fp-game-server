@@ -16,7 +16,7 @@ type HttpApi =
     -}
     "create-new-game"
         :> Post '[JSON] UUID
-    
+
     {-|
         Получить состояние игры по идентификатору.
         В случае отсутствия на сервере игры с переданным UUID клиенту возвращается код 400 BadRequest.
@@ -24,12 +24,12 @@ type HttpApi =
     :<|> "get-game-state"
         :> Header "Game-Uuid" UUID
         :> Get '[JSON] GameState
-    
+
     {-|
         Применить ход к состоянию игры.
         В случае передачи некорректного хода клиенту возвращается код 400 BadRequest.
     -}
     :<|> "apply-turn-to-game-state"
         :> Header "Game-Uuid" UUID
-        :> ReqBody '[JSON] PlayerTurn 
+        :> ReqBody '[JSON] PlayerTurn
         :> Post '[JSON] GameState

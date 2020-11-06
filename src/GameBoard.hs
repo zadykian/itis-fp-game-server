@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module GameBoard where
 
@@ -9,11 +10,13 @@ import CellPosition
 import Player
 import PlayerTurn
 import Control.Lens
+import Data.Aeson
+import GHC.Generics (Generic)
 
 {-|
     Игровое поле, состоящее из девяти ячеек.
 -}
-newtype GameBoard cell = GameBoard [cell] deriving (Eq, Show)
+newtype GameBoard cell = GameBoard [cell] deriving (Eq, Show, Generic)
 
 {-|
     Получить ячейку игрового поля по позиции CellPosition.
@@ -27,6 +30,11 @@ getBoardCell position (GameBoard cellList) = cellList !! fromEnum position
 type LocalBoard = GameBoard AtomicCell
 
 {-|
+    Представитель класса типов ToJSON для типа LocalBoard.
+-}
+instance ToJSON LocalBoard
+
+{-|
     Конструктор пустого локального поля.
 -}
 emptyLocalBoard :: LocalBoard
@@ -37,6 +45,11 @@ emptyLocalBoard = GameBoard $ replicate 9 emptyAtomicCell
     Глобальное игровое поле.
 -}
 type GlobalBoard = GameBoard LocalBoard
+
+{-|
+    Представитель класса типов ToJSON для типа GlobalBoard.
+-}
+instance ToJSON GlobalBoard
 
 {-|
     Конструктор пустого глобального поля.
