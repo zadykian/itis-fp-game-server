@@ -10,8 +10,10 @@ import CellPosition
 import Player
 import PlayerTurn
 import Control.Lens
+
 import Data.Aeson
 import GHC.Generics (Generic)
+import Data.Swagger.Internal.Schema (ToSchema)
 
 {-|
     Игровое поле, состоящее из девяти ячеек.
@@ -29,10 +31,8 @@ getBoardCell position (GameBoard cellList) = cellList !! fromEnum position
 -}
 type LocalBoard = GameBoard AtomicCell
 
-{-|
-    Представитель класса типов ToJSON для типа LocalBoard.
--}
 instance ToJSON LocalBoard
+instance ToSchema LocalBoard
 
 {-|
     Конструктор пустого локального поля.
@@ -46,10 +46,8 @@ emptyLocalBoard = GameBoard $ replicate 9 emptyAtomicCell
 -}
 type GlobalBoard = GameBoard LocalBoard
 
-{-|
-    Представитель класса типов ToJSON для типа GlobalBoard.
--}
 instance ToJSON GlobalBoard
+instance ToSchema GlobalBoard
 
 {-|
     Конструктор пустого глобального поля.

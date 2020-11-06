@@ -4,24 +4,19 @@ module PlayerTurn where
 
 import Player
 import CellPosition
+
 import Data.Aeson
 import GHC.Generics (Generic)
+import Data.Swagger (ToSchema)
 
 {-|
     Ход игрока.
 -}
 data PlayerTurn = PlayerTurn [CellPosition] Player deriving (Eq, Show, Generic)
 
-
-{-|
-    Представитель класса типов ToJSON для типа PlayerTurn.
--}
 instance ToJSON PlayerTurn
-
-{-|
-    Представитель класса типов FromJSON для типа PlayerTurn.
--}
 instance FromJSON PlayerTurn
+instance ToSchema PlayerTurn
 
 {-|
     Получить глобальную позицию в составе хода.

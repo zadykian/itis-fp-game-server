@@ -4,6 +4,7 @@ module Player where
 
 import Data.Aeson (ToJSON, FromJSON)
 import GHC.Generics (Generic)
+import Data.Swagger (ToSchema)
 
 {-|
     Тип игрока.
@@ -12,12 +13,6 @@ import GHC.Generics (Generic)
 -}
 data Player = X | O deriving (Eq, Show, Generic)
 
-{-|
-    Представитель класса типов ToJSON для типа Player.
--}
 instance ToJSON Player
-
-{-|
-    Представитель класса типов FromJSON для типа Player.
--}
 instance FromJSON Player
+instance ToSchema Player

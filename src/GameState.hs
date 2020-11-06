@@ -7,8 +7,10 @@ import PlayerTurn
 import BoardSegment
 import Player
 import BoardSegmentState
+
 import Data.Aeson
 import GHC.Generics (Generic)
+import Data.Swagger
 
 {-|
     Состояние игры.
@@ -16,10 +18,8 @@ import GHC.Generics (Generic)
 -}
 data GameState = GameState GlobalBoard (Maybe PlayerTurn) deriving (Eq, Show, Generic)
 
-{-|
-    Представитель класса типов ToJSON для типа GameState.
--}
 instance ToJSON GameState
+instance ToSchema GameState
 
 {-|
     Конструктор новой игровой партии.

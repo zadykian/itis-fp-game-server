@@ -19,8 +19,11 @@ dependencies:
 - lens
 - servant
 - servant-server
+- servant-swagger
+- swagger2
 - uuid
 - aeson
+- stm
 
 library:
   source-dirs: src

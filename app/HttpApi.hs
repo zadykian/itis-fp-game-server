@@ -4,11 +4,16 @@
 module HttpApi where
 
 import Servant.API
+import Data.Swagger (Swagger)
+
 import GameState (GameState)
 import PlayerTurn (PlayerTurn)
 import Data.UUID (UUID)
+import Data.Proxy
 
--- | Декларация HTTP Api, содержащая сигнатуры всех методов.
+{-|
+    Декларация HTTP Api, содержащая сигнатуры всех методов.
+-}
 type HttpApi =
     {-|
         Создать новую игру на сервере.
@@ -33,3 +38,19 @@ type HttpApi =
         :> Header "Game-Uuid" UUID
         :> ReqBody '[JSON] PlayerTurn
         :> Post '[JSON] GameState
+
+{-|
+    API для получения описания методов в виде JSON-документа.
+-}
+type SwaggerApi = "swagger.json" :> Get '[JSON] Swagger
+
+{-|
+    Общий API приложения (методы для взаимодействия с игрой + swagger).
+-}
+type HttpApiWithSwagger = HttpApi :<|> SwaggerApi
+
+{-|
+    Прокси HTTP Api без Swagger.
+-}
+httpApiProxy :: Proxy HttpApi
+httpApiProxy = Proxy

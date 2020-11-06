@@ -6,8 +6,10 @@ import BoardSegmentState
 import BoardSegment
 import PlayerTurn
 import Player
+
 import GHC.Generics (Generic)
 import Data.Aeson (ToJSON)
+import Data.Swagger (ToSchema)
 
 {-|
     Атомарная ячейка локального поля.
@@ -45,7 +47,5 @@ instance Show AtomicCell where
         Owned O -> show O
         Free -> "_"
 
-{-|
-    Представитель класса типов ToJSON для типа AtomicCell.
--}
 instance ToJSON AtomicCell
+instance ToSchema AtomicCell

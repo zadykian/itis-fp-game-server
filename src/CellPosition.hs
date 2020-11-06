@@ -4,6 +4,7 @@ module CellPosition (CellPosition, toEnum, fromEnum) where
 
 import Data.Aeson (ToJSON, FromJSON)
 import GHC.Generics (Generic)
+import Data.Swagger (ToSchema)
 
 {-|
      Позиция ячейки игрового поля.
@@ -38,12 +39,6 @@ instance Enum CellPosition where
 
     fromEnum (CellPosition intValue) = intValue
 
-{-|
-    Представитель класса типов ToJSON для типа CellPosition.
--}
 instance ToJSON CellPosition
-
-{-|
-    Представитель класса типов FromJSON для типа CellPosition.
--}
 instance FromJSON CellPosition
+instance ToSchema CellPosition
