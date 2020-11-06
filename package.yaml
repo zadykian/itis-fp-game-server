@@ -18,6 +18,8 @@ dependencies:
 - base >= 4.7 && < 5
 - lens
 - servant
+- servant-server
+- uuid
 
 library:
   source-dirs: src
