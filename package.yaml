@@ -21,6 +21,7 @@ dependencies:
 - servant-server
 - servant-swagger
 - swagger2
+- warp
 - uuid
 - aeson
 - stm

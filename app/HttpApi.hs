@@ -54,3 +54,9 @@ type HttpApiWithSwagger = HttpApi :<|> SwaggerApi
 -}
 httpApiProxy :: Proxy HttpApi
 httpApiProxy = Proxy
+
+{-|
+    Прокси HTTP Api с доступом к Swagger-документацией.
+-}
+httpApiWithSwaggerProxy :: Proxy HttpApiWithSwagger
+httpApiWithSwaggerProxy = Proxy
