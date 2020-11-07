@@ -16,7 +16,7 @@ import Control.Lens
     Swagger-спецификация API.
 -}
 swaggerSpecification :: Swagger
-swaggerSpecification = toSwagger httpApiProxy 
+swaggerSpecification = toSwagger (Proxy :: Proxy HttpApi) 
     & info.title .~ "Ultimate Tic-Tac-Toe API"
     & info.version .~ "0.3.0.0"
     & info.description ?~ "API for communicating with game server."

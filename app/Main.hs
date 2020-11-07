@@ -1,14 +1,16 @@
 module Main where
 
-import Servant
 import HttpApi
+
+import Options
+import Control.Lens.Lens ((&))
+import System.IO
+
+import Servant
 import Server
 import Network.Wai.Handler.Warp
 import ServerOptions
 import Data.Streaming.Network.Internal (HostPreference (Host))
-import Options
-import Control.Lens.Lens ((&))
-import System.IO
 
 main :: IO ()
 main = runCommand $ \options _ -> do
@@ -16,7 +18,7 @@ main = runCommand $ \options _ -> do
     hFlush stdout
 
     let warpSettings = cliOptionsToWarpSettings options
-    let application = serve httpApiWithSwaggerProxy httpServer
+    let application = serve (Proxy :: Proxy HttpApiWithSwagger) httpServer
     runSettings warpSettings application
 
 {-|
@@ -25,6 +27,6 @@ main = runCommand $ \options _ -> do
 cliOptionsToWarpSettings :: ServerOptions -> Settings
 cliOptionsToWarpSettings options
     = defaultSettings
-        & setHost (Host (options & host))
+        & setHost (Host $ options & host)
         & setPort (options & port)
         & setTimeout (options & timeout)
