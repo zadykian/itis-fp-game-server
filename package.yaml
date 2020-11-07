@@ -26,6 +26,7 @@ dependencies:
 - swagger2
 - warp
 - options
+- streaming-commons
 
 library:
   source-dirs: src
