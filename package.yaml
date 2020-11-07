@@ -17,14 +17,15 @@ extra-source-files:
 dependencies:
 - base >= 4.7 && < 5
 - lens
+- uuid
+- aeson
+- stm
 - servant
 - servant-server
 - servant-swagger
 - swagger2
 - warp
-- uuid
-- aeson
-- stm
+- options
 
 library:
   source-dirs: src
