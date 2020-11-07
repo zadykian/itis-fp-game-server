@@ -5,6 +5,7 @@ module Server where
 import Servant
 import Servant.Swagger
 import Data.Swagger
+import Servant.Swagger.UI
 import HttpApi
 
 import GameState(GameState, newGameState, tryApplyTurn)
@@ -12,11 +13,14 @@ import Data.UUID (UUID)
 import PlayerTurn
 import Control.Lens
 
+serverApplication :: Application
+serverApplication = serve (Proxy :: Proxy HttpApiWithSwagger) httpServerWithSwagger
+
 {-|
     Swagger-спецификация API.
 -}
 swaggerSpecification :: Swagger
-swaggerSpecification = toSwagger (Proxy :: Proxy HttpApi) 
+swaggerSpecification = toSwagger (Proxy :: Proxy HttpApi)
     & info.title .~ "Ultimate Tic-Tac-Toe API"
     & info.version .~ "0.3.0.0"
     & info.description ?~ "API for communicating with game server."
@@ -24,12 +28,13 @@ swaggerSpecification = toSwagger (Proxy :: Proxy HttpApi)
 {-|
     HTTP-сервер игры.
 -}
-httpServer :: Server HttpApiWithSwagger
-httpServer =
+httpServerWithSwagger :: Server HttpApiWithSwagger
+httpServerWithSwagger =
     (createNewGame
     :<|> getGameState
     :<|> applyTurnToGame)
-    :<|> return swaggerSpecification
+    :<|> swaggerSchemaUIServer swaggerSpecification
+    -- :<|> fallbackSwaggerUI
     where
         {-|
             Создать новую игру на сервере.
@@ -53,6 +58,6 @@ httpServer =
         applyTurnToGame Nothing _ = return400error
         -- todo
         applyTurnToGame gameUuid playerTurn = undefined
-        
+
         -- Сформировать ответ при отсутствии заголовка 'Game-Uuid' в запросе.
         return400error = throwError $ err400 { errReasonPhrase = "Game-Uuid header is required!"}
