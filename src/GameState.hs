@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module GameState where
 
@@ -18,7 +19,13 @@ import Data.Swagger
 -}
 data GameState = GameState GlobalBoard (Maybe PlayerTurn) deriving (Eq, Show, Generic)
 
-instance ToJSON GameState
+instance ToJSON GameState where
+    toJSON (GameState globalBoard playerTurn) = object
+        [
+            "GameBoard" .= globalBoard,
+            "LastPlayerTurn" .= playerTurn
+        ]
+
 instance ToSchema GameState
 
 {-|

@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module GameBoard where
 
@@ -9,7 +10,7 @@ import BoardSegmentState
 import CellPosition
 import Player
 import PlayerTurn
-import Control.Lens
+import Control.Lens hiding ((.=))
 
 import Data.Aeson
 import GHC.Generics (Generic)
@@ -31,7 +32,6 @@ getBoardCell position (GameBoard cellList) = cellList !! fromEnum position
 -}
 type LocalBoard = GameBoard AtomicCell
 
-instance ToJSON LocalBoard
 instance ToSchema LocalBoard
 
 {-|
@@ -46,7 +46,6 @@ emptyLocalBoard = GameBoard $ replicate 9 emptyAtomicCell
 -}
 type GlobalBoard = GameBoard LocalBoard
 
-instance ToJSON GlobalBoard
 instance ToSchema GlobalBoard
 
 {-|
@@ -112,3 +111,13 @@ instance (BoardSegment cell) => BoardSegment (GameBoard cell) where
             nextSegment = getBoardCell currentPosition gameBoard
 
     applyTurn _ _ = error "Player turn must contain CellPosition!"
+
+{-|
+    Представитель класса типов ToJSON для типа [GameBoard cell].
+-}
+instance (BoardSegment cell, ToJSON cell) => ToJSON (GameBoard cell) where
+    toJSON gameBoard@(GameBoard cellList) = object 
+        [
+            "CellList" .= cellList,
+            "SegmentState" .= state gameBoard 
+        ]

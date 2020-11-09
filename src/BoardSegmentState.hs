@@ -1,10 +1,11 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module BoardSegmentState where
 
 import Player
 
-import Data.Aeson (ToJSON, FromJSON)
+import Data.Aeson
 import GHC.Generics (Generic)
 import Data.Swagger (ToSchema, declareNamedSchema, genericDeclareNamedSchemaUnrestricted, defaultSchemaOptions)
 
@@ -14,7 +15,18 @@ import Data.Swagger (ToSchema, declareNamedSchema, genericDeclareNamedSchemaUnre
 -}
 data BoardSegmentState = Owned Player | Free deriving (Eq, Show, Generic)
 
-instance ToJSON BoardSegmentState
+instance ToJSON BoardSegmentState where
+    toJSON (Owned player) = object 
+        [
+            "State" .= ("Owned" :: String),
+            "OwnedBy" .= show player
+        ]
+    toJSON Free = object
+        [
+            "State" .= show Free
+        ]
+
 instance FromJSON BoardSegmentState
-instance ToSchema BoardSegmentState
-    where declareNamedSchema = genericDeclareNamedSchemaUnrestricted defaultSchemaOptions
+
+instance ToSchema BoardSegmentState where
+    declareNamedSchema = genericDeclareNamedSchemaUnrestricted defaultSchemaOptions

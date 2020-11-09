@@ -7,24 +7,37 @@ module PlayerTurn where
 import Player
 import CellPosition
 
+import Control.Applicative
 import Data.Aeson
 import GHC.Generics
 import Data.Swagger
-import Control.Lens
+import Control.Lens hiding ((.=))
 
 {-|
     Ход игрока.
 -}
 data PlayerTurn = PlayerTurn [CellPosition] Player deriving (Eq, Show, Generic)
 
-instance ToJSON PlayerTurn
-instance FromJSON PlayerTurn
+instance ToJSON PlayerTurn where
+    toJSON (PlayerTurn cellList playerOfTurn) = object
+        [
+            "GlobalBoardPosition" .= head cellList,
+            "LocalBoardPosition" .= cellList !! 1,
+            "Player" .= playerOfTurn
+        ]
+
+instance FromJSON PlayerTurn where
+    parseJSON (Object jsonValue) = do
+        globalBoardPosition <- jsonValue .: "GlobalBoardPosition"
+        localBoardPosition <- jsonValue .: "LocalBoardPosition"
+        playerOfTurn <- jsonValue .: "Player"
+        return $ PlayerTurn [globalBoardPosition, localBoardPosition] playerOfTurn
+    parseJSON _ = empty
 
 instance ToSchema PlayerTurn where
     declareNamedSchema proxy = genericDeclareNamedSchema defaultSchemaOptions proxy
         & mapped.schema.description ?~ "Player's turn example."
-        & mapped.schema.example ?~ toJSON (PlayerTurn (map toEnum [5, 5]) X)
-
+        & mapped.schema.example ?~ toJSON (PlayerTurn (map toEnum [4, 4]) X)
 
 {-|
     Получить глобальную позицию в составе хода.
