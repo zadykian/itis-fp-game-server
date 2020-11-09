@@ -10,13 +10,16 @@ import Servant.Swagger.UI
 import HttpApi
 
 import Data.UUID (UUID)
+import Data.UUID.V4 (nextRandom)
 import Control.Lens
 import Control.Monad.Trans.Reader
+import Control.Monad.IO.Class
 import Control.Concurrent.STM.Map
 
 import GameState(GameState, newGameState, tryApplyTurn)
 import PlayerTurn
 import Control.Monad.Trans.Class (lift)
+import Control.Concurrent.STM (atomically)
 
 {-|
     Хранилище игровых партий.
@@ -71,8 +74,11 @@ httpServerWithSwagger =
             Создать новую игру на сервере.
         -}
         createNewGame :: AppM UUID
-        -- todo
-        createNewGame = undefined
+        createNewGame = do
+            gameStorage <- ask
+            newGameStateGuid <- liftIO nextRandom
+            liftIO $ atomically $ insert newGameStateGuid newGameState gameStorage
+            return newGameStateGuid
 
         {-|
             Получить состояние игры по идентификатору.
