@@ -6,15 +6,35 @@ import Servant
 import Servant.Swagger
 import Data.Swagger
 import Servant.Swagger.UI
+
 import HttpApi
 
-import GameState(GameState, newGameState, tryApplyTurn)
 import Data.UUID (UUID)
-import PlayerTurn
 import Control.Lens
+import Control.Monad.Trans.Reader
+import Control.Concurrent.STM.Map
 
-serverApplication :: Application
-serverApplication = serve (Proxy :: Proxy HttpApiWithSwagger) httpServerWithSwagger
+import GameState(GameState, newGameState, tryApplyTurn)
+import PlayerTurn
+import Control.Monad.Trans.Class (lift)
+
+{-|
+    Хранилище игровых партий.
+-}
+type GameStorage = Map UUID GameState
+
+type AppM = ReaderT GameStorage Handler
+
+gameStorageToHandler :: GameStorage -> AppM a -> Handler a
+gameStorageToHandler = flip runReaderT
+
+{-|
+    Серверное приложение, инициализируемое хранилищем игровых партий.
+-}
+serverApplication :: GameStorage -> Application
+serverApplication gameStorage =
+    serve apiProxy
+    $ hoistServer apiProxy (gameStorageToHandler gameStorage) httpServerWithSwagger
 
 {-|
     Swagger-спецификация API.
@@ -26,27 +46,38 @@ swaggerSpecification = toSwagger (Proxy :: Proxy HttpApi)
     & info.description ?~ "API for communicating with game server."
 
 {-|
+    Поднять вычисление из Handler в AppM
+-}
+swaggerFromHandlerToAppM :: Server SwaggerApi -> ServerT SwaggerApi AppM
+swaggerFromHandlerToAppM = hoistServer (Proxy :: Proxy SwaggerApi) lift
+
+{-|
+    Сервер Swagger-спецификации.
+-}
+serverDocServer :: ServerT SwaggerApi AppM
+serverDocServer = swaggerFromHandlerToAppM $ swaggerSchemaUIServer swaggerSpecification
+
+{-|
     HTTP-сервер игры.
 -}
-httpServerWithSwagger :: Server HttpApiWithSwagger
+httpServerWithSwagger :: ServerT HttpApiWithSwagger AppM
 httpServerWithSwagger =
     (createNewGame
     :<|> getGameState
     :<|> applyTurnToGame)
-    :<|> swaggerSchemaUIServer swaggerSpecification
-    -- :<|> fallbackSwaggerUI
+    :<|> serverDocServer
     where
         {-|
             Создать новую игру на сервере.
         -}
-        createNewGame :: Handler UUID
+        createNewGame :: AppM UUID
         -- todo
         createNewGame = undefined
 
         {-|
             Получить состояние игры по идентификатору.
         -}
-        getGameState :: Maybe UUID -> Handler GameState
+        getGameState :: Maybe UUID -> AppM GameState
         getGameState Nothing = return400error
         -- todo
         getGameState gameUuid = undefined
@@ -54,7 +85,7 @@ httpServerWithSwagger =
         {-|
             Применить ход к состоянию игры.
         -}
-        applyTurnToGame :: Maybe UUID -> PlayerTurn -> Handler GameState
+        applyTurnToGame :: Maybe UUID -> PlayerTurn -> AppM GameState
         applyTurnToGame Nothing _ = return400error
         -- todo
         applyTurnToGame gameUuid playerTurn = undefined

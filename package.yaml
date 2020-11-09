@@ -28,6 +28,8 @@ dependencies:
 - warp
 - options
 - streaming-commons
+- transformers
+- ttrie
 
 library:
   source-dirs: src

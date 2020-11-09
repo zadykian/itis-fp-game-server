@@ -10,13 +10,16 @@ import Network.Wai.Handler.Warp
 import ServerOptions
 import Data.Streaming.Network.Internal (HostPreference (Host))
 
+import Control.Concurrent.STM (atomically)
+import Control.Concurrent.STM.Map (empty)
+
 main :: IO ()
 main = runCommand $ \options _ -> do
     putStrLn $ "Running API on " ++ show options
     hFlush stdout
-
     let warpSettings = cliOptionsToWarpSettings options
-    runSettings warpSettings serverApplication
+    gameStorage <- atomically empty
+    runSettings warpSettings $ serverApplication gameStorage
 
 {-|
     Преобразовать параметры CLI в настройки warp.

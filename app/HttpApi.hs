@@ -9,6 +9,7 @@ import Servant.Swagger.UI (SwaggerSchemaUI)
 import GameState (GameState)
 import PlayerTurn (PlayerTurn)
 import Data.UUID (UUID)
+import Data.Proxy (Proxy(..))
 
 {-|
     Декларация HTTP Api, содержащая сигнатуры всех методов.
@@ -47,3 +48,9 @@ type SwaggerApi = SwaggerSchemaUI "swagger-ui" "swagger.json"
     Общий API приложения (методы для взаимодействия с игрой + swagger).
 -}
 type HttpApiWithSwagger = HttpApi :<|> SwaggerApi
+
+{-|
+    Прокси API сервера.
+-}
+apiProxy :: Proxy HttpApiWithSwagger
+apiProxy = Proxy
