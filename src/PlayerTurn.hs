@@ -1,4 +1,6 @@
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DataKinds                  #-}
+{-# LANGUAGE DeriveGeneric              #-}
+{-# LANGUAGE OverloadedStrings          #-}
 
 module PlayerTurn where
 
@@ -6,8 +8,9 @@ import Player
 import CellPosition
 
 import Data.Aeson
-import GHC.Generics (Generic)
-import Data.Swagger (ToSchema)
+import GHC.Generics
+import Data.Swagger
+import Control.Lens
 
 {-|
     Ход игрока.
@@ -16,7 +19,12 @@ data PlayerTurn = PlayerTurn [CellPosition] Player deriving (Eq, Show, Generic)
 
 instance ToJSON PlayerTurn
 instance FromJSON PlayerTurn
-instance ToSchema PlayerTurn
+
+instance ToSchema PlayerTurn where
+    declareNamedSchema proxy = genericDeclareNamedSchema defaultSchemaOptions proxy
+        & mapped.schema.description ?~ "Player's turn example."
+        & mapped.schema.example ?~ toJSON (PlayerTurn (map toEnum [5, 5]) X)
+
 
 {-|
     Получить глобальную позицию в составе хода.

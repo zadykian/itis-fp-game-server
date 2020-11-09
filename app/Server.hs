@@ -99,11 +99,15 @@ httpServerWithSwagger =
             Применить ход к состоянию игры.
         -}
         applyTurnToGame :: Maybe UUID -> PlayerTurn -> AppM GameState
-        applyTurnToGame maybeGuid playerTurn = do
+        applyTurnToGame Nothing _ = return400error "Game-Uuid header is required!"
+        applyTurnToGame maybeGuid@(Just gameGuid) playerTurn = do
             gameState <- getGameState maybeGuid
             case tryApplyTurn playerTurn gameState of
                 Left errorMessage -> return400error errorMessage
-                Right modifiedGameState -> return modifiedGameState
+                Right modifiedGameState -> do
+                    gameStorage <- ask
+                    liftIO $ atomically $ insert gameGuid modifiedGameState gameStorage
+                    return modifiedGameState
 
         -- Сформировать ответ с кодом завершения '400 Bad Request'.
         return400error message = throwError $ err400 { errReasonPhrase = message}
