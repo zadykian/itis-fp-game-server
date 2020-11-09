@@ -1,6 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Server where
+
+import Prelude hiding (lookup)
 
 import Servant
 import Servant.Swagger
@@ -14,7 +17,7 @@ import Data.UUID.V4 (nextRandom)
 import Control.Lens
 import Control.Monad.Trans.Reader
 import Control.Monad.IO.Class
-import Control.Concurrent.STM.Map
+import Control.Concurrent.STM.Map (Map, insert, lookup)
 
 import GameState(GameState, newGameState, tryApplyTurn)
 import PlayerTurn
@@ -84,17 +87,23 @@ httpServerWithSwagger =
             Получить состояние игры по идентификатору.
         -}
         getGameState :: Maybe UUID -> AppM GameState
-        getGameState Nothing = return400error
-        -- todo
-        getGameState gameUuid = undefined
+        getGameState Nothing = return400error "Game-Uuid header is required!"
+        getGameState (Just gameUuid) = do
+            gameStorage <- ask
+            gameStateMaybe <- liftIO $ atomically $ lookup gameUuid gameStorage
+            case gameStateMaybe of
+                Just gameState -> return gameState
+                Nothing -> return400error $ "Game with UUID '" ++ show gameUuid ++ "' does not exist!"
 
         {-|
             Применить ход к состоянию игры.
         -}
         applyTurnToGame :: Maybe UUID -> PlayerTurn -> AppM GameState
-        applyTurnToGame Nothing _ = return400error
-        -- todo
-        applyTurnToGame gameUuid playerTurn = undefined
+        applyTurnToGame maybeGuid playerTurn = do
+            gameState <- getGameState maybeGuid
+            case tryApplyTurn playerTurn gameState of
+                Left errorMessage -> return400error errorMessage
+                Right modifiedGameState -> return modifiedGameState
 
-        -- Сформировать ответ при отсутствии заголовка 'Game-Uuid' в запросе.
-        return400error = throwError $ err400 { errReasonPhrase = "Game-Uuid header is required!"}
+        -- Сформировать ответ с кодом завершения '400 Bad Request'.
+        return400error message = throwError $ err400 { errReasonPhrase = message}
