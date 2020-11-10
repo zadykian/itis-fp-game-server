@@ -82,3 +82,9 @@ applyTurnToState :: PlayerTurn -> GameState -> GameState
 applyTurnToState playerTurn (GameState globalBoard _) =
     GameState (applyTurn playerTurn globalBoard)
     $ Just playerTurn
+
+{-|
+    Получить глобальное поле из состояния игры.
+-}
+getGlobalBoard :: GameState -> GlobalBoard
+getGlobalBoard (GameState global _) = global

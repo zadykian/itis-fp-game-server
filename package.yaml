@@ -30,6 +30,7 @@ dependencies:
 - streaming-commons
 - transformers
 - ttrie
+- time
 
 library:
   source-dirs: src

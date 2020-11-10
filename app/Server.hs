@@ -14,15 +14,19 @@ import HttpApi
 
 import Data.UUID (UUID)
 import Data.UUID.V4 (nextRandom)
+import Data.Time.Clock
 import Control.Lens
 import Control.Monad.Trans.Reader
 import Control.Monad.IO.Class
 import Control.Concurrent.STM.Map (Map, insert, lookup)
 
-import GameState(GameState, newGameState, tryApplyTurn)
+import GameState (GameState, newGameState, tryApplyTurn, getGlobalBoard)
+import BoardSegment (state)
 import PlayerTurn
 import Control.Monad.Trans.Class (lift)
 import Control.Concurrent.STM (atomically)
+import System.IO
+import BoardSegmentState
 
 {-|
     Хранилище игровых партий.
@@ -60,8 +64,8 @@ swaggerFromHandlerToAppM = hoistServer (Proxy :: Proxy SwaggerApi) lift
 {-|
     Сервер Swagger-спецификации.
 -}
-serverDocServer :: ServerT SwaggerApi AppM
-serverDocServer = swaggerFromHandlerToAppM $ swaggerSchemaUIServer swaggerSpecification
+swaggerDocServer :: ServerT SwaggerApi AppM
+swaggerDocServer = swaggerFromHandlerToAppM $ swaggerSchemaUIServer swaggerSpecification
 
 {-|
     HTTP-сервер игры.
@@ -71,7 +75,7 @@ httpServerWithSwagger =
     (createNewGame
     :<|> getGameState
     :<|> applyTurnToGame)
-    :<|> serverDocServer
+    :<|> swaggerDocServer
     where
         {-|
             Создать новую игру на сервере.
@@ -79,9 +83,10 @@ httpServerWithSwagger =
         createNewGame :: AppM UUID
         createNewGame = do
             gameStorage <- ask
-            newGameStateGuid <- liftIO nextRandom
-            liftIO $ atomically $ insert newGameStateGuid newGameState gameStorage
-            return newGameStateGuid
+            newGameGuid <- liftIO nextRandom
+            liftIO $ atomically $ insert newGameGuid newGameState gameStorage
+            logFromServerAction $ "game with UUID '" ++ show newGameGuid ++ "' was created."
+            return newGameGuid
 
         {-|
             Получить состояние игры по идентификатору.
@@ -103,11 +108,39 @@ httpServerWithSwagger =
         applyTurnToGame maybeGuid@(Just gameGuid) playerTurn = do
             gameState <- getGameState maybeGuid
             case tryApplyTurn playerTurn gameState of
-                Left errorMessage -> return400error errorMessage
+
+                Left errorMessage -> do
+                    logFromServerAction $ 
+                        "attempt to make invalid turn '" ++ show playerTurn ++ 
+                        "' in game with UUID '" ++ show gameGuid ++ "'." 
+                    return400error errorMessage
+
                 Right modifiedGameState -> do
                     gameStorage <- ask
                     liftIO $ atomically $ insert gameGuid modifiedGameState gameStorage
+
+                    case state $ getGlobalBoard modifiedGameState of
+                        Owned playerOfTurn -> logFromServerAction $ 
+                            "game '" ++ show gameGuid ++ 
+                            "' is won by player '" ++ show playerOfTurn ++ "'."
+                        _ -> return ()
+
                     return modifiedGameState
 
         -- Сформировать ответ с кодом завершения '400 Bad Request'.
         return400error message = throwError $ err400 { errReasonPhrase = message}
+
+{-|
+    Совершить запись в лог, находясь в монаде сервера.
+-}
+logFromServerAction :: String -> AppM ()
+logFromServerAction message = liftIO $ logMessageToStdOut message
+
+{-|
+    Отправить сообщение в stdout.
+-}
+logMessageToStdOut :: String -> IO ()
+logMessageToStdOut message = do
+    currentTime <- getCurrentTime
+    putStrLn $ show currentTime ++ ": " ++ message
+    hFlush stdout
