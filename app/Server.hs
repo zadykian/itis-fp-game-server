@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleContexts #-}
 
-module Server where
+module Server (serverApplication) where
 
 import Prelude hiding (lookup)
 
@@ -11,10 +11,10 @@ import Data.Swagger
 import Servant.Swagger.UI
 
 import HttpApi
+import Logger (logMessage)
 
 import Data.UUID (UUID)
 import Data.UUID.V4 (nextRandom)
-import Data.Time.Clock
 import Control.Lens
 import Control.Monad.Trans.Reader
 import Control.Monad.IO.Class
@@ -25,7 +25,6 @@ import BoardSegment (state)
 import PlayerTurn
 import Control.Monad.Trans.Class (lift)
 import Control.Concurrent.STM (atomically)
-import System.IO
 import BoardSegmentState
 
 {-|
@@ -128,19 +127,8 @@ httpServerWithSwagger =
                     return modifiedGameState
 
         -- Сформировать ответ с кодом завершения '400 Bad Request'.
-        return400error message = throwError $ err400 { errReasonPhrase = message}
+        return400error message = throwError $ err400 { errReasonPhrase = message }
 
-{-|
-    Совершить запись в лог, находясь в монаде сервера.
--}
-logFromServerAction :: String -> AppM ()
-logFromServerAction message = liftIO $ logMessageToStdOut message
-
-{-|
-    Отправить сообщение в stdout.
--}
-logMessageToStdOut :: String -> IO ()
-logMessageToStdOut message = do
-    currentTime <- getCurrentTime
-    putStrLn $ show currentTime ++ ": " ++ message
-    hFlush stdout
+        -- Записать в лог сообщение, находясь в монаде AppM.
+        logFromServerAction :: String -> AppM ()
+        logFromServerAction message = liftIO $ logMessage message

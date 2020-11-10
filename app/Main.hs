@@ -1,10 +1,10 @@
 module Main where
 
 import Server (serverApplication)
+import Logger (logMessage)
 
 import Options
 import Control.Lens.Lens ((&))
-import System.IO
 
 import Network.Wai.Handler.Warp
 import ServerOptions
@@ -15,8 +15,8 @@ import Control.Concurrent.STM.Map (empty)
 
 main :: IO ()
 main = runCommand $ \options _ -> do
-    putStrLn $ "Running API on " ++ show options
-    hFlush stdout
+    logMessage $ "Running API on " ++ show options
+    logMessage $ "SwaggerUI on " ++ fullAddress options ++ "/swagger-ui"
     let warpSettings = cliOptionsToWarpSettings options
     gameStorage <- atomically empty
     runSettings warpSettings $ serverApplication gameStorage
