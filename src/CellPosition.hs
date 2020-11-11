@@ -1,4 +1,10 @@
+{-# LANGUAGE DeriveGeneric #-}
+
 module CellPosition (CellPosition, toEnum, fromEnum) where
+
+import Data.Aeson (ToJSON, FromJSON)
+import GHC.Generics (Generic)
+import Data.Swagger (ToSchema)
 
 {-|
      Позиция ячейки игрового поля.
@@ -11,7 +17,7 @@ module CellPosition (CellPosition, toEnum, fromEnum) where
          --+---+--
          6 | 7 | 8
 -}
-newtype CellPosition = CellPosition Int deriving (Eq, Ord, Show)
+newtype CellPosition = CellPosition Int deriving (Eq, Ord, Show, Generic)
 
 {-|
     Представитель класса типов Bounded для типа CellPosition.
@@ -32,3 +38,7 @@ instance Enum CellPosition where
         where cellToCreate = CellPosition intValue
 
     fromEnum (CellPosition intValue) = intValue
+
+instance ToJSON CellPosition
+instance FromJSON CellPosition
+instance ToSchema CellPosition

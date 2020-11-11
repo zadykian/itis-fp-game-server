@@ -1,3 +1,5 @@
+{-# LANGUAGE DeriveGeneric #-}
+
 module AtomicCell where
 
 import BoardSegmentState
@@ -5,10 +7,14 @@ import BoardSegment
 import PlayerTurn
 import Player
 
+import GHC.Generics (Generic)
+import Data.Aeson (ToJSON)
+import Data.Swagger (ToSchema)
+
 {-|
     Атомарная ячейка локального поля.
 -}
-newtype AtomicCell = AtomicCell BoardSegmentState deriving (Eq)
+newtype AtomicCell = AtomicCell BoardSegmentState deriving (Eq, Generic)
 
 {-|
     Конструктор пустой атомарной ячейки.
@@ -40,3 +46,6 @@ instance Show AtomicCell where
         Owned X -> show X
         Owned O -> show O
         Free -> "_"
+
+instance ToJSON AtomicCell
+instance ToSchema AtomicCell

@@ -1,4 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module GameBoard where
 
@@ -8,12 +10,16 @@ import BoardSegmentState
 import CellPosition
 import Player
 import PlayerTurn
-import Control.Lens
+import Control.Lens hiding ((.=))
+
+import Data.Aeson
+import GHC.Generics (Generic)
+import Data.Swagger.Internal.Schema (ToSchema)
 
 {-|
     Игровое поле, состоящее из девяти ячеек.
 -}
-newtype GameBoard cell = GameBoard [cell] deriving (Eq, Show)
+newtype GameBoard cell = GameBoard [cell] deriving (Eq, Show, Generic)
 
 {-|
     Получить ячейку игрового поля по позиции CellPosition.
@@ -26,6 +32,8 @@ getBoardCell position (GameBoard cellList) = cellList !! fromEnum position
 -}
 type LocalBoard = GameBoard AtomicCell
 
+instance ToSchema LocalBoard
+
 {-|
     Конструктор пустого локального поля.
 -}
@@ -37,6 +45,8 @@ emptyLocalBoard = GameBoard $ replicate 9 emptyAtomicCell
     Глобальное игровое поле.
 -}
 type GlobalBoard = GameBoard LocalBoard
+
+instance ToSchema GlobalBoard
 
 {-|
     Конструктор пустого глобального поля.
@@ -101,3 +111,13 @@ instance (BoardSegment cell) => BoardSegment (GameBoard cell) where
             nextSegment = getBoardCell currentPosition gameBoard
 
     applyTurn _ _ = error "Player turn must contain CellPosition!"
+
+{-|
+    Представитель класса типов ToJSON для типа [GameBoard cell].
+-}
+instance (BoardSegment cell, ToJSON cell) => ToJSON (GameBoard cell) where
+    toJSON gameBoard@(GameBoard cellList) = object 
+        [
+            "CellList" .= cellList,
+            "SegmentState" .= state gameBoard 
+        ]

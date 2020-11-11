@@ -1,3 +1,6 @@
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
+
 module GameState where
 
 import GameBoard(GlobalBoard, getBoardCell, emptyGlobalBoard)
@@ -6,18 +9,30 @@ import BoardSegment
 import Player
 import BoardSegmentState
 
+import Data.Aeson
+import GHC.Generics (Generic)
+import Data.Swagger
+
 {-|
     Состояние игры.
     Описывается как глобальное поле и последний ход одного из игроков.
 -}
-data GameState = GameState GlobalBoard (Maybe PlayerTurn) deriving (Eq, Show)
+data GameState = GameState GlobalBoard (Maybe PlayerTurn) deriving (Eq, Show, Generic)
+
+instance ToJSON GameState where
+    toJSON (GameState globalBoard playerTurn) = object
+        [
+            "GameBoard" .= globalBoard,
+            "LastPlayerTurn" .= playerTurn
+        ]
+
+instance ToSchema GameState
 
 {-|
     Конструктор новой игровой партии.
 -}
 newGameState :: GameState
 newGameState = GameState emptyGlobalBoard Nothing
-
 
 {-|
     Сообщение об ошибке выполнения операции.
@@ -67,3 +82,9 @@ applyTurnToState :: PlayerTurn -> GameState -> GameState
 applyTurnToState playerTurn (GameState globalBoard _) =
     GameState (applyTurn playerTurn globalBoard)
     $ Just playerTurn
+
+{-|
+    Получить глобальное поле из состояния игры.
+-}
+getGlobalBoard :: GameState -> GlobalBoard
+getGlobalBoard (GameState global _) = global

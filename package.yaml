@@ -17,6 +17,20 @@ extra-source-files:
 dependencies:
 - base >= 4.7 && < 5
 - lens
+- uuid
+- aeson
+- stm
+- servant
+- servant-server
+- servant-swagger
+- servant-swagger-ui
+- swagger2
+- warp
+- options
+- streaming-commons
+- transformers
+- ttrie
+- time
 
 library:
   source-dirs: src
