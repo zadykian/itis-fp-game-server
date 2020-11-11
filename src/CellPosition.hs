@@ -1,6 +1,11 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module CellPosition (CellPosition, toEnum, fromEnum) where
+module CellPosition 
+    (
+        CellPosition,
+        toEnum,
+        fromEnum
+    ) where
 
 import Data.Aeson (ToJSON, FromJSON)
 import GHC.Generics (Generic)

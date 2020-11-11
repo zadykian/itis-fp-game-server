@@ -1,17 +1,23 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module GameState where
+module GameState 
+    (
+        GameState(..),
+        tryApplyTurn,
+        newGameState,
+        getGlobalBoard
+    ) where
 
 import GameBoard(GlobalBoard, getBoardCell, emptyGlobalBoard)
 import PlayerTurn
 import BoardSegment
-import Player
-import BoardSegmentState
+import Player (Player(..))
+import BoardSegmentState (BoardSegmentState(..))
 
-import Data.Aeson
+import Data.Aeson (ToJSON, toJSON, object, (.=))
 import GHC.Generics (Generic)
-import Data.Swagger
+import Data.Swagger (ToSchema)
 
 {-|
     Состояние игры.

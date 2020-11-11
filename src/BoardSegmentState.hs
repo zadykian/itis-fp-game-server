@@ -1,13 +1,26 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module BoardSegmentState where
+module BoardSegmentState (BoardSegmentState(..)) where
 
-import Player
+import Player (Player)
 
-import Data.Aeson
+import Data.Aeson 
+    (
+        ToJSON, toJSON,
+        object, (.=), 
+        FromJSON
+    )
+
+import Data.Swagger 
+    (
+        ToSchema,
+        declareNamedSchema,
+        genericDeclareNamedSchemaUnrestricted,
+        defaultSchemaOptions
+    )
+    
 import GHC.Generics (Generic)
-import Data.Swagger (ToSchema, declareNamedSchema, genericDeclareNamedSchemaUnrestricted, defaultSchemaOptions)
 
 {-|
     Состояние сегмента игрового поля.

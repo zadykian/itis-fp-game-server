@@ -2,16 +2,34 @@
 {-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE OverloadedStrings          #-}
 
-module PlayerTurn where
+module PlayerTurn 
+    (
+        PlayerTurn(..),
+        globalPosition,
+        localPosition, 
+        player
+    ) where
 
-import Player
-import CellPosition
+import Player (Player(..))
+import CellPosition (CellPosition)
 
-import Control.Applicative
+import Control.Applicative (empty)
+import GHC.Generics (Generic)
+import Control.Lens ((&), (?~), mapped)
+
 import Data.Aeson
-import GHC.Generics
+    (
+        ToJSON, toJSON,
+        FromJSON, parseJSON,
+        Value(..), object, (.=), (.:)
+    )
+
 import Data.Swagger
-import Control.Lens hiding ((.=))
+    (
+        ToSchema, declareNamedSchema,
+        genericDeclareNamedSchema, defaultSchemaOptions, 
+        schema, description, example
+    )
 
 {-|
     Ход игрока.
@@ -19,11 +37,11 @@ import Control.Lens hiding ((.=))
 data PlayerTurn = PlayerTurn [CellPosition] Player deriving (Eq, Show, Generic)
 
 instance ToJSON PlayerTurn where
-    toJSON (PlayerTurn cellList playerOfTurn) = object
+    toJSON playerTurn = object
         [
-            "GlobalBoardPosition" .= head cellList,
-            "LocalBoardPosition" .= cellList !! 1,
-            "Player" .= playerOfTurn
+            "GlobalBoardPosition" .= globalPosition playerTurn,
+            "LocalBoardPosition" .= localPosition playerTurn,
+            "Player" .= player playerTurn
         ]
 
 instance FromJSON PlayerTurn where
@@ -43,15 +61,13 @@ instance ToSchema PlayerTurn where
     Получить глобальную позицию в составе хода.
 -}
 globalPosition :: PlayerTurn -> CellPosition
-globalPosition (PlayerTurn (global : _) _) = global
-globalPosition _ = error "Player turn does not contain global position!"
+globalPosition (PlayerTurn positionsList _) = head positionsList
 
 {-|
     Получить локальную позицию в составе хода.
 -}
 localPosition :: PlayerTurn -> CellPosition
-localPosition (PlayerTurn (_ : local : _) _) = local
-localPosition _ = error "Player turn does not contain local position!"
+localPosition (PlayerTurn positionsList _) = positionsList !! 1
 
 {-|
     Получить игрока, выполняющего ход.
